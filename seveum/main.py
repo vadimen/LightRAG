@@ -8,6 +8,15 @@ import logging
 from openai import AzureOpenAI
 import tiktoken
 
+from helper import (
+    save_graph_to_json,
+    load_graph_from_json,
+    generate_graph2vec_embedding,
+    save_embeddings_to_json,
+    save_graph_with_embedding,
+    load_graph_with_embedding
+)
+
 logging.basicConfig(level=logging.INFO)
 
 load_dotenv()
@@ -119,21 +128,30 @@ rag = LightRAG(
 
 job1 = open("./job1.txt", encoding="utf-8")
 
+# After inserting the document
 rag.insert([job1.read()])
 
-# query_text = "What are the main themes?"
+try:
+    import networkx as nx
+    
+    # Load the graph from GraphML file
+    graphml_path = os.path.join(WORKING_DIR, "graph_chunk_entity_relation.graphml")
+    G = nx.read_graphml(graphml_path)
+    
+    # Generate embedding
+    graph_embedding = generate_graph2vec_embedding([G])
+    
+    # Save graph and embedding together
+    combined_output_path = os.path.join(WORKING_DIR, "graph_with_embedding.json")
+    save_graph_with_embedding(G, graph_embedding[0], combined_output_path)
+    
+    # Test loading
+    loaded_graph, loaded_embedding = load_graph_with_embedding(combined_output_path)
+    logging.info(f"Successfully saved and loaded combined graph data at {combined_output_path}")
 
-# print("Result (Naive):")
-# print(rag.query(query_text, param=QueryParam(mode="naive")))
-
-# print("\nResult (Local):")
-# print(rag.query(query_text, param=QueryParam(mode="local")))
-
-# print("\nResult (Global):")
-# print(rag.query(query_text, param=QueryParam(mode="global")))
-
-# print("\nResult (Hybrid):")
-# print(rag.query(query_text, param=QueryParam(mode="hybrid")))
+except Exception as e:
+    print(f"Error processing graph: {str(e)}")
+    logging.error("Error details:", exc_info=True)
 
 print(f"\nTotal tokens used:")
 print(f"LLM tokens: {total_llm_tokens}")

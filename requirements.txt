@@ -29,3 +29,4 @@ tenacity
 tiktoken
 
 # Extra libraries are installed when needed using pipmaster
+gensim

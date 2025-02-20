@@ -10,7 +10,8 @@ from pyvis.network import Network
 import random
 
 # Load the GraphML file
-G = nx.read_graphml("/home/vadim/Repos/LightRAG/my_tests/jobs_graphs/graph_chunk_entity_relation.graphml")
+#G = nx.read_graphml("/home/vadim/Repos/LightRAG/seveum/jobs_graphs/graph_chunk_entity_relation.graphml")
+G = nx.read_graphml("/home/vadim/Repos/LightRAG/seveum/jobs_graphs/extracted_graph.graphml")
 
 # Create a Pyvis network
 net = Network(height="100vh", notebook=True)
